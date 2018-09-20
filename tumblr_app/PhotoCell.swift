@@ -1,5 +1,5 @@
 //
-//  photoTableViewCell.swift
+//  PhotoCell.swift
 //  tumblr_app
 //
 //  Created by kairi on 9/19/18.
@@ -8,11 +8,9 @@
 
 import UIKit
 
-class photoTableViewCell: UITableViewCell {
-    
+class PhotoCell: UITableViewCell {
+
     @IBOutlet weak var postImageView: UIImageView!
-    
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
