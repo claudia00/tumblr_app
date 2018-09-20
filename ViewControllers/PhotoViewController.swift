@@ -30,14 +30,12 @@ class PhotoViewController: UIViewController, UITableViewDataSource {
        // refreshControl.addTarget(self, action: #selector(PhotoViewController.didPullToRefresh(_:)), for: .valueChanged)
         
         tableView.insertSubview(refreshControl, at: 0)
-            fetchPhotos()
-        func didPullToRefresh(_: UIRefreshControl){
+        fetchPhotos()
+       func didPullToRefresh(_: UIRefreshControl){
             fetchPhotos()
         }
-        
-  
     }
-
+        
         // Do any additional setup after loading the view.
        
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -64,31 +62,43 @@ class PhotoViewController: UIViewController, UITableViewDataSource {
         }
         return cell
     }
-        func fetchPhotos(){
-            let url = URL(string: "https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=Q6vHoaVm5L1u2ZAW1fqv3Jw48gFzYVg9P0vH0VHl3GVy6quoGV")!
-            //let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-            let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-            session.configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-            let task = session.dataTask(with: url) {(data, response, error) in
-                //This will run when the network request returns
-                if let error = error{
-                    print(error.localizedDescription)
-                }else if let data = data{
-                    let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                    print(dataDictionary)
-                    //TODO: Get the posts and store in posts property
-                    let responseDictionary = dataDictionary["response"] as! [String: Any]
-                    // Store the returned array of dictionaries in our posts property
-                    self.posts = responseDictionary["posts"] as! [[String: Any]]
-                    //TODO: Reload the table view
-                    self.tableView.reloadData()
-                    self.refreshControl.endRefreshing()
-                }
-            }
-            task.resume()
         
+    func fetchPhotos(){
+        let url = URL(string: "https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=Q6vHoaVm5L1u2ZAW1fqv3Jw48gFzYVg9P0vH0VHl3GVy6quoGV")!
+        //let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
+        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
+        session.configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        let task = session.dataTask(with: url) {(data, response, error) in
+            //This will run when the network request returns
+            if let error = error{
+                print(error.localizedDescription)
+            }else if let data = data{
+                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+                print(dataDictionary)
+                //TODO: Get the posts and store in posts property
+                let responseDictionary = dataDictionary["response"] as! [String: Any]
+                // Store the returned array of dictionaries in our posts property
+                self.posts = responseDictionary["posts"] as! [[String: Any]]
+                //TODO: Reload the table view
+                self.tableView.reloadData()
+                self.refreshControl.endRefreshing()
+            }
         }
-    
+        task.resume()
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+        //let cell = sender as! UITableViewCell
+        let cell = sender as! UITableViewCell
+        if let indexPath = tableView.indexPath(for: cell){
+        let post = posts[indexPath.row]
+        let vc = segue.destination as! PhotoDetailsViewController
+            vc.post = post
+            //let cell = sender as! UITableView
+       
+        }
+        
+        
+    }
 
     
    
